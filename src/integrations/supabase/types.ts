@@ -16,64 +16,242 @@ export type Database = {
     Tables: {
       attendance: {
         Row: {
-          id: number
-          status: string | null
-          student_id: number | null
-          workshop_id: number | null
+          id: string
+          marked_at: string
+          session_id: string
+          status: string
+          student_id: string
         }
         Insert: {
-          id?: number
-          status?: string | null
-          student_id?: number | null
-          workshop_id?: number | null
+          id?: string
+          marked_at?: string
+          session_id: string
+          status?: string
+          student_id: string
         }
         Update: {
-          id?: number
-          status?: string | null
-          student_id?: number | null
-          workshop_id?: number | null
+          id?: string
+          marked_at?: string
+          session_id?: string
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      certificates: {
+        Row: {
+          id: string
+          issue_date: string
+          student_id: string
+          workshop_id: string
+        }
+        Insert: {
+          id?: string
+          issue_date?: string
+          student_id: string
+          workshop_id: string
+        }
+        Update: {
+          id?: string
+          issue_date?: string
+          student_id?: string
+          workshop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      enrollments: {
+        Row: {
+          enrolled_at: string
+          id: string
+          student_id: string
+          workshop_id: string
+        }
+        Insert: {
+          enrolled_at?: string
+          id?: string
+          student_id: string
+          workshop_id: string
+        }
+        Update: {
+          enrolled_at?: string
+          id?: string
+          student_id?: string
+          workshop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enrollments_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feedback: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          student_id: string
+          workshop_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          student_id: string
+          workshop_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          student_id?: string
+          workshop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          id: string
+          name: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }
-      students: {
+      sessions: {
         Row: {
-          course: string | null
-          email: string | null
-          id: number
-          name: string | null
+          created_at: string
+          id: string
+          qr_code: string | null
+          session_date: string
+          session_number: number
+          workshop_id: string
         }
         Insert: {
-          course?: string | null
-          email?: string | null
-          id?: number
-          name?: string | null
+          created_at?: string
+          id?: string
+          qr_code?: string | null
+          session_date: string
+          session_number?: number
+          workshop_id: string
         }
         Update: {
-          course?: string | null
-          email?: string | null
-          id?: number
-          name?: string | null
+          created_at?: string
+          id?: string
+          qr_code?: string | null
+          session_date?: string
+          session_number?: number
+          workshop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sessions_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
       workshops: {
         Row: {
-          id: number
-          start_date: string | null
-          title: string | null
-          trainer: string | null
+          category: string
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          max_participants: number | null
+          start_date: string
+          title: string
+          total_sessions: number
+          trainer_id: string | null
         }
         Insert: {
-          id?: number
-          start_date?: string | null
-          title?: string | null
-          trainer?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          max_participants?: number | null
+          start_date: string
+          title: string
+          total_sessions?: number
+          trainer_id?: string | null
         }
         Update: {
-          id?: number
-          start_date?: string | null
-          title?: string | null
-          trainer?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          max_participants?: number | null
+          start_date?: string
+          title?: string
+          total_sessions?: number
+          trainer_id?: string | null
         }
         Relationships: []
       }
@@ -82,10 +260,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "trainer" | "student"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -212,6 +400,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "trainer", "student"],
+    },
   },
 } as const
