@@ -43,7 +43,7 @@ const Auth = () => {
       email: signupEmail,
       password: signupPassword,
       options: {
-        data: { name: signupName, role: signupRole },
+        data: { name: signupName },
         emailRedirectTo: window.location.origin,
       },
     });
