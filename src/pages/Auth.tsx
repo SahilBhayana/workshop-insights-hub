@@ -106,16 +106,6 @@ const Auth = () => {
                     <Label htmlFor="signup-password">Password</Label>
                     <Input id="signup-password" type="password" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required minLength={6} />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Role</Label>
-                    <Select value={signupRole} onValueChange={setSignupRole}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="student">Student</SelectItem>
-                        <SelectItem value="trainer">Trainer</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? "Creating account..." : "Create Account"}
                   </Button>
