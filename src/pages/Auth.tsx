@@ -23,17 +23,30 @@ const Auth = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: loginEmail,
       password: loginPassword,
     });
-    setLoading(false);
     if (error) {
+      setLoading(false);
       toast.error(error.message);
-    } else {
-      toast.success("Logged in successfully!");
-      navigate("/dashboard");
+      return;
     }
+    // Check if profile exists in database
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", data.user.id)
+      .single();
+    if (!profile) {
+      await supabase.auth.signOut();
+      setLoading(false);
+      toast.error("Account not found. Please sign up first.");
+      return;
+    }
+    setLoading(false);
+    toast.success("Logged in successfully!");
+    navigate("/dashboard");
   };
 
   const handleSignup = async (e: React.FormEvent) => {
