@@ -18,7 +18,7 @@ const Auth = () => {
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
-  const [signupRole, setSignupRole] = useState<string>("student");
+  
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
