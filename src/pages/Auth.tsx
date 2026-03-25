@@ -143,6 +143,13 @@ const Auth = () => {
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? "Signing in..." : "Sign In"}
                   </Button>
+                  <button
+                    type="button"
+                    onClick={() => setShowForgot(true)}
+                    className="w-full text-sm text-primary hover:underline mt-2"
+                  >
+                    Forgot Password?
+                  </button>
                 </form>
               </TabsContent>
 
