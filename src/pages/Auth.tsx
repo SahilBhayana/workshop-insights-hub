@@ -53,6 +53,43 @@ const Auth = () => {
     navigate("/dashboard");
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setLoading(true);
+    
+    // First verify the user exists
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("email", forgotEmail)
+      .single();
+    
+    if (!profile) {
+      setLoading(false);
+      toast.error("No account found with this email. Please sign up first.");
+      return;
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Password reset link sent to your email. Click the link, then set your new password.");
+      setShowForgot(false);
+    }
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
