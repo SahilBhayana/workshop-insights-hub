@@ -1,0 +1,1 @@
+CREATE POLICY "Trainers can create own workshops" ON public.workshops FOR INSERT TO authenticated WITH CHECK (trainer_id = auth.uid() AND has_role(auth.uid(), 'trainer'));
