@@ -208,7 +208,11 @@ const Workshops = () => {
               </div>
               {w.profiles?.name && <p className="text-xs text-muted-foreground">Trainer: {w.profiles.name}</p>}
               {role === "student" && (
-                <Button size="sm" className="w-full" onClick={() => handleEnroll(w.id)}>Enroll</Button>
+                enrolledIds.includes(w.id) ? (
+                  <Button size="sm" className="w-full" variant="secondary" disabled>Enrolled</Button>
+                ) : (
+                  <Button size="sm" className="w-full" onClick={() => handleEnroll(w.id)}>Enroll</Button>
+                )
               )}
             </CardContent>
           </Card>
