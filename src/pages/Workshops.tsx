@@ -16,9 +16,11 @@ const CATEGORIES = ["coding", "digital marketing", "AI", "data science", "design
 const Workshops = () => {
   const { role, user } = useAuth();
   const [workshops, setWorkshops] = useState<any[]>([]);
+  const [enrolledIds, setEnrolledIds] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [studentView, setStudentView] = useState<"mine" | "browse">("mine");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState({
     title: "", description: "", category: "general",
@@ -32,6 +34,14 @@ const Workshops = () => {
     }
     const { data } = await query.order("start_date", { ascending: false });
     setWorkshops(data || []);
+
+    if (role === "student" && user) {
+      const { data: enr } = await supabase
+        .from("enrollments")
+        .select("workshop_id")
+        .eq("student_id", user.id);
+      setEnrolledIds((enr || []).map((e: any) => e.workshop_id));
+    }
   };
 
   useEffect(() => { fetchWorkshops(); }, [role, user]);
@@ -62,6 +72,7 @@ const Workshops = () => {
       toast.error(error.message.includes("duplicate") ? "Already enrolled!" : error.message);
     } else {
       toast.success("Enrolled successfully!");
+      setEnrolledIds((prev) => [...prev, workshopId]);
     }
   };
 
@@ -74,7 +85,11 @@ const Workshops = () => {
     if (statusFilter === "upcoming") matchStatus = w.start_date >= today;
     else if (statusFilter === "ongoing") matchStatus = w.start_date <= today && endRef >= today;
     else if (statusFilter === "ended") matchStatus = endRef < today;
-    return matchSearch && matchCat && matchStatus;
+    let matchStudent = true;
+    if (role === "student" && studentView === "mine") {
+      matchStudent = enrolledIds.includes(w.id);
+    }
+    return matchSearch && matchCat && matchStatus && matchStudent;
   });
 
   return (
@@ -147,6 +162,15 @@ const Workshops = () => {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Search workshops..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
         </div>
+        {role === "student" && (
+          <Select value={studentView} onValueChange={(v: "mine" | "browse") => setStudentView(v)}>
+            <SelectTrigger className="w-full sm:w-44"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="mine">My Workshops</SelectItem>
+              <SelectItem value="browse">Browse All</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
           <SelectTrigger className="w-full sm:w-48"><SelectValue placeholder="All Categories" /></SelectTrigger>
           <SelectContent>
@@ -184,7 +208,11 @@ const Workshops = () => {
               </div>
               {w.profiles?.name && <p className="text-xs text-muted-foreground">Trainer: {w.profiles.name}</p>}
               {role === "student" && (
-                <Button size="sm" className="w-full" onClick={() => handleEnroll(w.id)}>Enroll</Button>
+                enrolledIds.includes(w.id) ? (
+                  <Button size="sm" className="w-full" variant="secondary" disabled>Enrolled</Button>
+                ) : (
+                  <Button size="sm" className="w-full" onClick={() => handleEnroll(w.id)}>Enroll</Button>
+                )
               )}
             </CardContent>
           </Card>
