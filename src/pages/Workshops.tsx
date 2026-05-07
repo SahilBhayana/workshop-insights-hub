@@ -18,6 +18,7 @@ const Workshops = () => {
   const [workshops, setWorkshops] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState({
     title: "", description: "", category: "general",
@@ -67,7 +68,13 @@ const Workshops = () => {
   const filtered = workshops.filter((w) => {
     const matchSearch = w.title?.toLowerCase().includes(search.toLowerCase());
     const matchCat = categoryFilter === "all" || w.category === categoryFilter;
-    return matchSearch && matchCat;
+    const today = new Date().toISOString().split("T")[0];
+    const endRef = w.end_date || w.start_date;
+    let matchStatus = true;
+    if (statusFilter === "upcoming") matchStatus = w.start_date >= today;
+    else if (statusFilter === "ongoing") matchStatus = w.start_date <= today && endRef >= today;
+    else if (statusFilter === "ended") matchStatus = endRef < today;
+    return matchSearch && matchCat && matchStatus;
   });
 
   return (
@@ -145,6 +152,15 @@ const Workshops = () => {
           <SelectContent>
             <SelectItem value="all">All Categories</SelectItem>
             {CATEGORIES.map((c) => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-full sm:w-44"><SelectValue placeholder="All Status" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Workshops</SelectItem>
+            <SelectItem value="upcoming">Upcoming</SelectItem>
+            <SelectItem value="ongoing">Ongoing</SelectItem>
+            <SelectItem value="ended">Ended</SelectItem>
           </SelectContent>
         </Select>
       </div>
